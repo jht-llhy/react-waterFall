@@ -1,25 +1,10 @@
-# react-waterFall
+import React, { useState, useCallback } from 'react'
+import ReactDOM from 'react-dom'
 
-react轻量级瀑布流组件
+import WaterFall from '../waterFall/WaterFall'
 
-## 参数
+import './index.less'
 
-|参数|说明|类型|默认值|
-|:--:|:--:|:--:|:--:|
-|col|列数，必填|number or string|3|
-|horizontalSpacing|水平间距|number or string|10|
-|verticalSpacing|垂直间距|number or string|10|
-|waterFallBoxStyle|瀑布流容器样式覆盖|Object|{}|
-|width|宽度，建议填写，不写则自适应|number or string|'unset'|
-|useWindow|触底加载以body作为参照|boolean|false|
-|limitHeight|触底加载触发高度|number or string|50|
-|CardComponent|卡片组件|React.ComponentType<any>|() => null|
-|data|循环数据|Array<any>|[]|
-|onReachBottom|数据加载钩子函数|Function|() => { }|
-
-## 示例
-
-```javascript
 const getDefaultData = () => {
   return Array.from(Array(10), (v, k) => {
     return 200 + Math.random() * 200
@@ -50,7 +35,6 @@ function App() {
     col: 3,
     horizontalSpacing: 10,
     verticalSpacing: 10,
-    waterFallBoxStyle: {},
     width: 'unset',
     useWindow: false,
     limitHeight: 50,
@@ -66,4 +50,10 @@ function App() {
     </>
   )
 }
-```
+
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+)

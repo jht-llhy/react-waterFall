@@ -1,0 +1,44 @@
+{
+    "version": "0.0.1",
+    "name": "react-waterfall",
+    "description": "react轻量级瀑布流组件",
+    "author": "jianghantong-adi",
+    "files": [
+        "dist"
+    ],
+    "main": "./dist/react-waterfall.umd.js",
+    "module": "./dist/react-waterfall.es.js",
+    "exports": {
+        ".": {
+            "import": "./dist/react-waterfall.es.js",
+            "require": "./dist/react-waterfall.umd.js"
+        }
+    },
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "lodash": "^4.17.21",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2"
+    },
+    "peerDependencies": {
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2"
+    },
+    "devDependencies": {
+        "@types/lodash": "^4.14.178",
+        "@types/react": "^17.0.33",
+        "@types/react-dom": "^17.0.10",
+        "@vitejs/plugin-react": "^1.0.7",
+        "less": "^4.1.2",
+        "typescript": "^4.4.4",
+        "vite": "^2.7.2",
+        "vite-plugin-dts": "^0.9.9"
+    },
+    "keywords": [
+        "water-fall", "waterfall", "瀑布流", "react"
+    ]
+}
