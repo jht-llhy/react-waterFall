@@ -1,6 +1,6 @@
 import React, { useState, useLayoutEffect, useEffect, useRef, useCallback } from 'react'
 
-import throttle from 'lodash/throttle'
+import { throttle, intersectionWith, differenceWith, isEqual } from 'lodash'
 
 export interface WaterFallProps {
   col: number | string;                       // 列数，必填
@@ -44,6 +44,14 @@ function getEmptyArr(col: number | string) {
   return Array.from(Array(col), (v, k) => [])
 }
 
+function getIntersection(preData: Array<any>, data: Array<any>) {
+  return intersectionWith(preData, data, isEqual);
+}
+
+function getDifference(preData: Array<any>, data: Array<any>) {
+  return differenceWith(data, preData, isEqual);
+}
+
 function nextIndex(current: number, sum: number) {
   if (current === sum - 1) {
     return 0
@@ -73,7 +81,7 @@ function useScroll(useWindow: any, limitHeight: any, waterFallNode: any, onReach
   useLayoutEffect(()=>{
     const target = useWindow ? window : waterFallNode.current.parentNode;
 
-    const onScorll = throttle(() => {
+    const onScroll = throttle(() => {
       let scrollHeight, scrollTop, innerHeight;
       if(useWindow) {
         scrollHeight = document.body.scrollHeight;
@@ -87,12 +95,12 @@ function useScroll(useWindow: any, limitHeight: any, waterFallNode: any, onReach
       if(scrollTop + innerHeight >= scrollHeight - limitHeight) {
         onReachBottom();
       }
-    }, 100)
+    }, 300)
 
-    target.addEventListener('scroll', onScorll);
+    target.addEventListener('scroll', onScroll);
 
     return ()=>{
-      target.removeEventListener('scroll', onScorll);
+      target.removeEventListener('scroll', onScroll);
     }
   }, [])
 }
@@ -113,25 +121,36 @@ export default function WaterFall(props: WaterFallProps) {
 
   const waterFallNode = useRef(null);
 
+  const preData = useRef<Array<any>>([]);
+
+  const preColIndex = useRef<number>(0);
+
   const [colArr, setColArr] = useState<Array<any>>(getEmptyArr(col)); // 列数据
 
-  const computedData = () => {
-    const emptyArr: Array<any> = getEmptyArr(col);
+  const setPreColIndex = (colDomList:Element[]) => {
+    const { index } = getDomByHeight(colDomList, minOrMax.min);
+    preColIndex.current = index;
+  }
+
+  const computedData = (data:Array<any>, refresh?:boolean) => {
+    const targetArr: Array<any> = refresh ? getEmptyArr(col) : colArr;
     const currentData = [...data];
 
     let itemIndex = data.length;
-    let colIndex = 0;
+    let colIndex = preColIndex.current;
 
     while (itemIndex !== 0) {
       const currentCol = colIndex;
       const currentItem = currentData.shift();
-      emptyArr[currentCol].push(currentItem);
+      targetArr[currentCol].push(currentItem);
 
       colIndex = nextIndex(colIndex, Number(col));
       itemIndex--;
     }
 
-    setColArr(emptyArr)
+    console.log("computedData", targetArr)
+
+    setColArr([...targetArr])
   }
 
   const arrangeData = (maxIndex: number, minIndex: number) => {
@@ -162,19 +181,40 @@ export default function WaterFall(props: WaterFallProps) {
 
     if (
       maxHeightColList.clientHeight - minHeightColList.clientHeight >
-      maxHeightColLastChild.clientHeight
+      maxHeightColLastChild.clientHeight + verticalSpacing
     ) {
       arrangeData(maxHeightIndex, minHeightIndex);
     }
+
+    setPreColIndex(colDomList);
   }
 
   useEffect(() => {
-    computedData();
-  }, [props])
+    if(!preData.current.length || preData.current.length > data.length) {
+      computedData(data, true);
+    }else {
+      const intersectionData = getIntersection(preData.current, data);
+      if(intersectionData.length === preData.current.length) {
+        computedData(getDifference(preData.current, data));
+      }else {
+        computedData(data, true);
+      }
+    }
+
+    preData.current = data;
+  }, [col, data])
 
   useLayoutEffect(() => {
     computedDom();
-  }, [props])
+  }, [
+    colArr,
+    horizontalSpacing,
+    verticalSpacing,
+    waterFallBoxStyle,
+    width,
+    useWindow,
+    CardComponent,
+  ])
 
   useScroll(useWindow, limitHeight, waterFallNode, onReachBottom);
 
@@ -194,6 +234,8 @@ export default function WaterFall(props: WaterFallProps) {
               className='waterFall-col-box'
               style={{
                 'marginRight': listCol === colArr.length - 1 ? "unset" : `${horizontalSpacing}px`,
+                'flexGrow': 1,
+                'flexShrink': 1
               }}
             >
               {
@@ -204,6 +246,7 @@ export default function WaterFall(props: WaterFallProps) {
                       key={index}
                       style={{
                         'marginBottom': `${verticalSpacing}px`,
+                        'overflow': 'hidden'
                       }}
                     >
                       <CardComponent key={index} data={item} index={`${listCol}-${index}`} />
