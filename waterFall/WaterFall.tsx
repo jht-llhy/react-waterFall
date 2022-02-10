@@ -1,6 +1,9 @@
 import React, { useState, useLayoutEffect, useEffect, useRef, useCallback } from 'react'
 
-import { throttle, intersectionWith, differenceWith, isEqual } from 'lodash'
+import throttle from 'lodash/throttle'
+import intersectionWith from 'lodash/intersectionWith'
+import differenceWith from 'lodash/differenceWith'
+import isEqual from 'lodash/isEqual'
 
 export interface WaterFallProps {
   col: number | string;                       // 列数，必填
