@@ -151,8 +151,6 @@ export default function WaterFall(props: WaterFallProps) {
       itemIndex--;
     }
 
-    console.log("computedData", targetArr)
-
     setColArr([...targetArr])
   }
 

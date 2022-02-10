@@ -1,6 +1,6 @@
 {
     "version": "0.0.1",
-    "name": "react-waterfall",
+    "name": "react-waterfall-scroll",
     "description": "react轻量级瀑布流组件",
     "author": "jianghantong-adi",
     "files": [
@@ -43,5 +43,7 @@
         "waterfall",
         "瀑布流",
         "react"
-    ]
+    ],
+    "repository": "https://github.com/jht-llhy/react-waterFall",
+    "homepage": "https://github.com/jht-llhy/react-waterFallr#readme"
 }
